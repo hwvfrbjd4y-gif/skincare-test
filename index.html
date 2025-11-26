@@ -1,112 +1,32 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スキンケア診断</title>
-<style>
-body {
-  font-family: sans-serif;
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 10px;
-  line-height: 1.7;
-}
-select, button {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  font-size: 16px;
-}
-#result {
-  margin-top: 20px;
-  padding: 15px;
-  background: #f6f6f6;
-  border-radius: 8px;
-}
-</style>
-</head>
-<body>
+スキンケア診断ツール
+このスキンケア診断ツールについて
+肌質・刺激・悩みに合わせて「化粧水／美容液／乳液（乾燥肌のみ）／保湿ジェル（その他肌質）」を提案します。
+年齢
+  20代
+  30代
+  40代
+  50代
+  60代
+  70代以上
+肌質
+  乾燥肌
+  脂性肌
+  普通肌
+  混合肌
+重視したい効果
+  美白
+  シワ改善
+  バリア改善
+刺激に弱い？
+  いいえ（普通）
+  はい（刺激に弱い）
+予算
+  〜3000円
+  3001〜6000円
+  6001円以上
+診断する
 
-<h2>スキンケア診断ツール</h2>
-<p>あなたの肌に合うスキンケア成分を診断します。</p>
-
-<label>年齢</label>
-<select id="age">
-  <option value="20">20代</option>
-  <option value="30">30代</option>
-  <option value="40">40代</option>
-  <option value="50">50代</option>
-  <option value="60">60代</option>
-</select>
-
-<label>肌質</label>
-<select id="skin">
-  <option value="dry">乾燥肌</option>
-  <option value="oily">脂性肌</option>
-  <option value="normal">普通肌</option>
-  <option value="combo">混合肌</option>
-</select>
-
-<label>重視したい効果</label>
-<select id="effect">
-  <option value="white">美白</option>
-  <option value="wrinkle">シワ改善</option>
-  <option value="barrier">バリア改善</option>
-</select>
-
-<label>敏感度</label>
-<select id="sens">
-  <option value="low">敏感ではない</option>
-  <option value="high">敏感肌</option>
-</select>
-
-<button onclick="diagnose()">診断する</button>
-
-<div id="result"></div>
-
-<script>
-function diagnose() {
-  const age = document.getElementById("age").value;
-  const skin = document.getElementById("skin").value;
-  const effect = document.getElementById("effect").value;
-  const sens = document.getElementById("sens").value;
-
-  let rec = "";
-
-  // 肌質
-  if (skin === "dry") {
-    rec += "▶ 乾燥肌：<br>・セラミド<br>・スクワラン<br>・アミノ酸系保湿<br><br>";
-  }
-  if (skin === "oily") {
-    rec += "▶ 脂性肌：<br>・ナイアシンアミド<br>・ビタミンC誘導体<br><br>";
-  }
-  if (skin === "combo") {
-    rec += "▶ 混合肌：<br>・油分控えめ保湿＋部分ケア<br><br>";
-  }
-  if (skin === "normal") {
-    rec += "▶ 普通肌：<br>・基本はなんでもOK<br><br>";
-  }
-
-  // 効果
-  if (effect === "white") {
-    rec += "▶ 美白したいなら：<br>・トラネキサム酸<br>・ナイアシンアミド<br><br>";
-  }
-  if (effect === "wrinkle") {
-    rec += "▶ シワ改善したいなら：<br>・レチノール（敏感ならバクチオール）<br>・ナイアシンアミド<br><br>";
-  }
-  if (effect === "barrier") {
-    rec += "▶ バリア改善：<br>・セラミド<br>・ナイアシンアミド<br><br>";
-  }
-
-  // 敏感肌
-  if (sens === "high") {
-    rec += "※敏感肌なので刺激弱め処方推奨（アルコールなど避ける）<br>";
-  }
-
-  document.getElementById("result").innerHTML = rec;
-}
-</script>
-
-</body>
-</html>
+※ご注意ください
+この診断は一般的な美容成分の傾向に基づく参考情報です。
+肌質・体調・アレルギーには個人差がありますので、使用時は必ず状態を確認してください。
+異常があれば使用を中止し、必要に応じて専門家へ相談してください。
