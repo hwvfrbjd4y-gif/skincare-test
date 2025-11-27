@@ -118,17 +118,8 @@
     color: #004e5f;
     line-height: 1.7;
   }
-<style>
-  .top-box {
-    margin-bottom: 25px;
-    padding: 15px;
-    background: #e8faff;
-    border-radius: 12px;
-    border: 1px solid #b8e6f0;
-    color: #004e5f;
-    line-height: 1.7;
-  }
 
+  /* ここからスマホで押しやすいサイズ調整 */
   select {
     width: 100%;
     padding: 20px 18px;
@@ -142,29 +133,27 @@
     padding: 22px;
     font-size: 20px;
     border-radius: 12px;
-    background: #00a5df;   
-  color: #fff;
+    background: #00a5df;
+    color: #fff;
   }
+
   @media (max-width: 480px) {
-  select {
-    padding: 22px 18px;
-    font-size: 22px;
-    border-radius: 12px;
+    select {
+      padding: 22px 18px;
+      font-size: 22px;
+      border-radius: 12px;
+    }
+
+    button {
+      padding: 24px;
+      font-size: 22px;
+      border-radius: 12px;
+    }
+
+    label {
+      font-size: 20px;
+    }
   }
-
-  button {
-    padding: 24px;
-    font-size: 22px;
-    border-radius: 12px;
-  }
-
-  label {
-    font-size: 20px;
-  }
-}
-
-</style>
-
 </style>
 
 </head>
@@ -232,25 +221,45 @@
 
 <script>
 function analyze() {
-  const skin = document.getElementById("skin").value;
-  const focus = document.getElementById("focus").value;
+  const skin      = document.getElementById("skin").value;
+  const focus     = document.getElementById("focus").value;
   const sensitive = document.getElementById("sensitive").value;
-  const budget = document.getElementById("budget").value;
+  const budget    = document.getElementById("budget").value;
 
-  let lotion = "";
-  let serum  = "";
-  let emulsion = ""; 
-  let message = "";
+  let lotion   = "";
+  let serum    = "";
+  let message  = "";
 
-  /* 乳液 or 保湿ジェル 決定ロジック */
+  // 乳液 or 保湿ジェル ブロック（新ルール反映）
   function moistureBlock() {
     if (skin === "dry") {
-      return `
+      // 乾燥肌：効果別で乳液を変える
+      if (focus === "whitening") {
+        // 乾燥肌×美白 → VCなし。美白乳液2種
+        return `
+        <div class="card-item">
+          <strong>■ 乳液（美白）</strong><br>
+          ・資生堂 アクアレーベル トリートメントミルク（ブライトニング）<br>
+          ・キュレル シミ・ソバカス予防ケア 乳液
+        </div>`;
+      } else if (focus === "barrier") {
+        // 乾燥肌×バリア → トゥヴェール＋カルテHD
+        return `
+        <div class="card-item">
+          <strong>■ 乳液（バリア・保湿）</strong><br>
+          ・トゥヴェール セラミドミルク（セラミド）<br>
+          ・カルテHD 乾燥ケア 高保湿乳液（ヘパリン類似物質）
+        </div>`;
+      } else {
+        // それ以外の乾燥肌は従来のバリア乳液
+        return `
         <div class="card-item">
           <strong>■ 乳液</strong><br>
           ケアセラ AP 高保湿先行バリア乳液
         </div>`;
+      }
     } else {
+      // 乾燥肌以外 → 保湿ジェル
       return `
         <div class="card-item">
           <strong>■ 保湿ジェル</strong><br>
@@ -259,25 +268,33 @@ function analyze() {
     }
   }
 
-  /* ------------------ 刺激に弱い ------------------ */
+  /* ------------------ 刺激に弱いルート ------------------ */
   if (sensitive === "yes") {
 
     if (focus === "whitening") {
-      message = "刺激に弱い人の美白は、トラネキサム酸＋VC誘導体が優しいよ。";
-      lotion = "・ちふれ 美白化粧水 TA";
-      serum  = "・モイスチュアマイルド ホワイト リペア エッセンス C100";
+      if (skin === "dry") {
+        // 乾燥肌×美白×敏感 → VC勧めない
+        message = "乾燥肌で刺激に弱い人の美白は、トラネキサム酸中心＋美白乳液でゆるく攻めるのが安全ゾーン。ビタミンCは今回はおすすめから外します。";
+        lotion  = "・ちふれ 美白化粧水 TA";
+        serum   = "・（美容液は、敏感肌向けのTXA・ナイアシンアミド美白美容液などを様子を見ながら）";
+      } else {
+        message = "刺激に弱い人の美白は、トラネキサム酸＋ビタミンC誘導体をゆるめに使うのが安心。";
+        lotion  = "・ちふれ 美白化粧水 TA";
+        serum   = "・モイスチュアマイルド ホワイト リペア エッセンス C100";
+      }
 
     } else if (focus === "wrinkle") {
-      message = "刺激に弱い人はレチノールNG。ライスパワーNo.11でケアしよ。";
+      // シワ×敏感 → レチノールNG（既にレチノールなしルート）
+      message = "刺激に弱い人のシワ改善は、レチノールは攻めずにライスパワーNo.11でじんわりケア。";
 
-      if (budget === "low") serum = "・コスメディカ リペアセラム（No.11）";
-      if (budget === "mid") serum = "・ONE BY KOSE セラムシールド（No.11）";
-      if (budget === "high") serum = "・ライース リンクルクロス（No.11）";
+      if (budget === "low")  serum = "・コスメディカ リペアセラム（ライスパワーNo.11）";
+      if (budget === "mid")  serum = "・ONE BY KOSE セラムシールド（ライスパワーNo.11）";
+      if (budget === "high") serum = "・ライース リンクルクロス（ライスパワーNo.11）";
 
       lotion = "・ヒフミド エッセンスローション";
 
     } else if (focus === "barrier") {
-      message = "バリア改善は、セラミド＋ナイアシンアミドが最強だよ！";
+      message = "バリア改善は、セラミド＋ナイアシンアミドが王道。敏感肌でも使いやすい処方から。";
 
       lotion = "・ヒフミド エッセンスローション";
       serum  = "・ETVOS モイスチャライジングセラム（ヒト型セラミド）<br>・オルビス リンクルブライトセラム（ナイアシンアミド）";
@@ -290,59 +307,82 @@ function analyze() {
         <div class="card-item"><strong>■ 化粧水</strong><br>${lotion}</div>
         <div class="card-item"><strong>■ 美容液</strong><br>${serum}</div>
         ${moistureBlock()}
+      </div>
+      <div class="card">
+        <p>※敏感寄りのため、必ずパッチテストしてね。合わなければすぐ中止でOK。</p>
       </div>`;
     return;
   }
 
 
-  /* ------------------ 通常ルート ------------------ */
+  /* ------------------ 通常ルート（刺激に強い側） ------------------ */
 
   if (focus === "whitening") {
-
+    // 美白×刺激に強い
     if (skin === "dry") {
-      message = "乾燥肌の美白はTXAが相性よし。";
-      lotion = "・ちふれ 美白化粧水 TA";
-      serum  = budget === "low" 
-         ? "・モイスチュアマイルド ホワイト リペア エッセンス C100"
-         : "・オバジC5";
-
-
-    } else if (skin === "oily" || skin === "combo") {
-      message = "脂性肌・混合肌はビタミンCが最適！";
-      lotion = "・ちふれ 美白化粧水 TA";
-
-      if (budget === "low") serum = "・メラノCC プレミアム";
-      if (budget === "mid") serum = "・オバジC10";
+      // ★新ルール：乾燥肌×美白 → VCは勧めない
+      message = "乾燥肌の美白は、トラネキサム酸＋美白乳液中心で。ビタミンCは乾燥を悪化させることがあるので今回はナシ。";
+      lotion  = "・ちふれ 美白化粧水 TA";
+      serum   = "・（美容液はTXA・ナイアシンアミドなど、しっとりめの美白美容液を様子見で追加）";
 
     } else {
-      message = "普通肌はTXAもVCもどちらもOK。";
-      lotion = "・ちふれ 美白化粧水 TA";
+      // 非乾燥肌×美白×刺激に強い → ダーマエイド／トゥヴェール／ハイチオール
+      message = "美白×刺激に強いなら、トラネキサム酸ローション＋ビタミンC美容液のW攻めもアリ。";
 
-      if (budget === "low") serum = "・メラノCC プレミアム";
-      if (budget === "mid") serum = "・オバジC10";
-      if (budget === "high") serum = "・オバジC5";
+      // 化粧水
+      if (budget === "low") {
+        lotion = "・ダーマエイド トリプルアクティブローション（〜3000円）";
+      } else if (budget === "mid") {
+        lotion = "・トゥヴェール 薬用 モイスチャー ローション（3001〜6000円）";
+      } else {
+        lotion = "・トゥヴェール 薬用 モイスチャー ローション など、同価格帯の美白化粧水";
+      }
+
+      // 美容液
+      if (budget === "low") {
+        serum = "・メラノCC プレミアム（プチプラVC）";
+      } else if (budget === "mid") {
+        serum = "・ハイチオール リンクルメラノブースター（3001〜6000円）";
+      } else { // high
+        serum = "・オバジC10など、高価格帯ビタミンC美容液";
+      }
     }
-  }
 
-  else if (focus === "wrinkle") {
+  } else if (focus === "wrinkle") {
+    // シワ改善（刺激に強い側）→ 新ラインナップに差し替え
+    message = "シワ改善は、レチノール or ナイアシンアミド系美容液が軸。ここではレチノール系を中心に。";
 
-    message = "シワ改善はレチノール or ライスパワーNo.11。";
+    // 化粧水
+    if (budget === "low") {
+      lotion = "・肌ラボ 極潤 薬用ハリ化粧水（〜3000円）";
+    } else {
+      lotion = "・肌ラボ 極潤 薬用ハリ化粧水 など、ハリ・弾力ラインの化粧水";
+    }
+
+    // 美容液
+    if (budget === "low") {
+      serum = "・肌美精 薬用リンクル美容液（〜3000円）";
+    } else if (budget === "mid") {
+      serum = "・肌美精 薬用リンクル美容液＋中価格帯ナイアシンアミド美容液";
+    } else { // high
+      serum = "・エリクシール ザ セラム（6000円以上）";
+    }
+
+  } else if (focus === "barrier") {
+    message = "バリア改善は、セラミド＋ナイアシンアミド＋やさしい保湿がベース。";
+
     lotion = "・ヒフミド エッセンスローション";
-
-    if (budget === "low") serum = "・アンレーベル Rエッセンス";
-    if (budget === "mid") serum = "・ダーマセプトRX VAセラム";
-    if (budget === "high") serum = "・エリクシール レチノパワー";
-
+    serum  = "・ETVOS モイスチャライジングセラム（ヒト型セラミド）<br>・オルビス リンクルブライトセラム（ナイアシンアミド）";
   }
 
-  else if (focus === "barrier") {
-
-    message = "セラミド＋ナイアシンアミドのWケアが最強！";
-
-    lotion = "・ヒフミド エッセンスローション";
-    serum = "・ETVOS モイスチャライジングセラム（ヒト型セラミド）<br>・オルビス リンクルブライトセラム（ナイアシンアミド）";
+  // 乾燥肌×美白の注意書き（VC外しの説明）
+  let extraNote = "";
+  if (focus === "whitening" && skin === "dry") {
+    extraNote =
+      "<p>※乾燥肌＋美白の場合、高濃度ビタミンCはつっぱりや乾燥悪化につながることがあるため、この診断ではVC美容液をおすすめから外しています。</p>";
   }
 
+  // 乾燥肌×バリアは、乳液側ですでにトゥヴェール／カルテHDを出している
 
   document.getElementById("result").innerHTML =
     `<div class="card">
@@ -353,6 +393,7 @@ function analyze() {
       <div class="card-item"><strong>■ 美容液</strong><br>${serum}</div>
 
       ${moistureBlock()}
+      ${extraNote}
     </div>`;
 }
 </script>
