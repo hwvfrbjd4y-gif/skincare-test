@@ -53,7 +53,7 @@
     width: 60%;
     padding: 15px;
     font-size: 16px;
-    text-align: center;
+    textalign: center;
     background: #0096c7;
     color: white;
     border: none;
@@ -230,7 +230,7 @@ function analyze() {
   let serum    = "";
   let message  = "";
 
-  // 乳液 or 保湿ジェル ブロック（新ルール反映）
+  // 乳液 or 保湿ジェル ブロック（乾燥肌だけ乳液）
   function moistureBlock() {
     if (skin === "dry") {
       // 乾燥肌：効果別で乳液を変える
@@ -273,10 +273,16 @@ function analyze() {
 
     if (focus === "whitening") {
       if (skin === "dry") {
-        // 乾燥肌×美白×敏感 → VC勧めない
+        // 乾燥肌×美白×敏感 → VC勧めない＋CeraLabo（中価格帯）追加
         message = "乾燥肌で刺激に弱い人の美白は、トラネキサム酸中心＋美白乳液でゆるく攻めるのが安全ゾーン。ビタミンCは今回はおすすめから外します。";
         lotion  = "・ちふれ 美白化粧水 TA";
-        serum   = "・（美容液は、敏感肌向けのTXA・ナイアシンアミド美白美容液などを様子を見ながら）";
+
+        if (budget === "mid") {
+          serum = "・CeraLabo セラキュア シャインドリップ（3001〜6000円）";
+        } else {
+          serum = "・（美容液は、敏感肌向けのTXA・ナイアシンアミド美白美容液などを様子を見ながら）";
+        }
+
       } else {
         message = "刺激に弱い人の美白は、トラネキサム酸＋ビタミンC誘導体をゆるめに使うのが安心。";
         lotion  = "・ちふれ 美白化粧水 TA";
@@ -284,7 +290,7 @@ function analyze() {
       }
 
     } else if (focus === "wrinkle") {
-      // シワ×敏感 → レチノールNG（既にレチノールなしルート）
+      // シワ×敏感 → レチノールNG（ライスパワーNo.11ルート）
       message = "刺激に弱い人のシワ改善は、レチノールは攻めずにライスパワーNo.11でじんわりケア。";
 
       if (budget === "low")  serum = "・コスメディカ リペアセラム（ライスパワーNo.11）";
@@ -320,10 +326,15 @@ function analyze() {
   if (focus === "whitening") {
     // 美白×刺激に強い
     if (skin === "dry") {
-      // ★新ルール：乾燥肌×美白 → VCは勧めない
+      // 乾燥肌×美白 → VCは勧めない＋中価格帯でCeraLabo
       message = "乾燥肌の美白は、トラネキサム酸＋美白乳液中心で。ビタミンCは乾燥を悪化させることがあるので今回はナシ。";
       lotion  = "・ちふれ 美白化粧水 TA";
-      serum   = "・（美容液はTXA・ナイアシンアミドなど、しっとりめの美白美容液を様子見で追加）";
+
+      if (budget === "mid") {
+        serum = "・CeraLabo セラキュア シャインドリップ（3001〜6000円）";
+      } else {
+        serum = "・（美容液はTXA・ナイアシンアミドなど、しっとりめの美白美容液を様子見で追加）";
+      }
 
     } else {
       // 非乾燥肌×美白×刺激に強い → ダーマエイド／トゥヴェール／ハイチオール
@@ -349,7 +360,7 @@ function analyze() {
     }
 
   } else if (focus === "wrinkle") {
-    // シワ改善（刺激に強い側）→ 新ラインナップに差し替え
+    // シワ改善（刺激に強い側）
     message = "シワ改善は、レチノール or ナイアシンアミド系美容液が軸。ここではレチノール系を中心に。";
 
     // 化粧水
@@ -359,11 +370,11 @@ function analyze() {
       lotion = "・肌ラボ 極潤 薬用ハリ化粧水 など、ハリ・弾力ラインの化粧水";
     }
 
-    // 美容液
+    // 美容液／クリーム（★ここ修正済み）
     if (budget === "low") {
-      serum = "・肌美精 薬用リンクル美容液（〜3000円）";
+      serum = "・アンレーベルラボ R エッセンス（〜3000円）";
     } else if (budget === "mid") {
-      serum = "・肌美精 薬用リンクル美容液＋中価格帯ナイアシンアミド美容液";
+      serum = "・ELIXIR エリクシール レチノパワー リンクルクリーム（3001〜6000円）";
     } else { // high
       serum = "・エリクシール ザ セラム（6000円以上）";
     }
@@ -382,15 +393,13 @@ function analyze() {
       "<p>※乾燥肌＋美白の場合、高濃度ビタミンCはつっぱりや乾燥悪化につながることがあるため、この診断ではVC美容液をおすすめから外しています。</p>";
   }
 
-  // 乾燥肌×バリアは、乳液側ですでにトゥヴェール／カルテHDを出している
-
   document.getElementById("result").innerHTML =
     `<div class="card">
       <h3>診断結果</h3>
       <p>${message}</p>
 
       <div class="card-item"><strong>■ 化粧水</strong><br>${lotion}</div>
-      <div class="card-item"><strong>■ 美容液</strong><br>${serum}</div>
+      <div class="card-item"><strong>■ 美容液／クリーム</strong><br>${serum}</div>
 
       ${moistureBlock()}
       ${extraNote}
